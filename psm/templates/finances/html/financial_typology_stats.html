@@ -1,0 +1,159 @@
+{% extends 'base/html/base_index.html' %}
+
+{% if user.user_type == 'financial' %}
+    {% block financial_typology_stats_active %}active{% endblock %}
+{% else %}
+    {% block superuser_typology_stats_active %}active{% endblock %}
+{% endif %}
+
+{% block pageTitle %}Estatíticas{% endblock %}
+
+{% block content %}
+    <div class="flex-row d-flex justify-content-between mb-3 align-items-center"></div>
+    <!-- Basic Bootstrap Table -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-baseline">
+            <div class="h5">Dados Estatísticos</div>
+        </div>
+        <div class="card-body">
+            <table id="stats_list" class="table">
+                <thead>
+                    <tr>
+                        <th>Ano</th>
+                        <th>Data de Criação</th>
+                        <th>Data da Última Alteração</th>
+                        <th>Dados de Tipologia</th>
+                        <th>Dados por Casa de Saúde</th>
+                    </tr>
+                </thead>
+                <tbody id="">
+                    {% for s in stats %}
+                        <tr>
+                            <td>{{ s.year }}</td>
+                            <td>{{ s.created }}</td>
+                            <td>{{ s.modified }}</td>
+                            <td><a href="javascript:void(0);" data-year="{{ s.year }}" onclick="TypologyStats.showTypologyStatsModal(this)">Ver Dados</a></td>
+                            <td><a href="javascript:void(0);" data-year="{{ s.year }}" onclick="TypologyStats.showCareHouseStatsModal(this)">Ver Dados</a></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!--/ Basic Bootstrap Table -->
+{% endblock %}
+
+{% block modals %}
+    <!--begin::Typology Stats Details Modal-->
+    <div class="modal fade" id="typology_stats_modal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="typology_stats_modal_title"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-3 d-flex align-items-end">
+                        <div class="col-4">
+                            <label for="typology_stats_care_house_select" class="form-label required">Casa de Saúde</label>
+                            <select id="typology_stats_care_house_select" class="form-select">
+                                <option>Selecione...</option>
+                                {% for c in care_houses %}
+                                    <option value="{{ c.id }}">{{ c.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-4">
+                            <label for="typology_stats_typology_select" class="form-label required">Tipologia</label>
+                            <select id="typology_stats_typology_select" class="form-select">
+                                <option>Selecione...</option>
+                                {% for t in typology %}
+                                    <option value="{{ t }}">{{ t }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-4">
+                            <button id="typology_stats_search" class="btn btn-primary" onclick="TypologyStats.getTypologyStatsData(this)">
+                                <span class="indicator-progress d-none">
+                                    Aguarde...<span class="ms-2 spinner-border spinner-border-sm"></span>
+                                </span>
+                                <span class="indicator-label">Visualizar</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div>
+                        <table class="table" id="typology_stats_table"></table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="typology_stats_download_btn" type="button" class="btn btn-primary" onclick="TypologyStats.downloadTypologyStats(this)">Download Ficheiro</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end::Typology Stats Details Modal-->
+    <!--begin::Care House Stats Details Modal-->
+    <div class="modal fade" id="care_house_stats_modal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="care_house_stats_modal_title"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-3 d-flex align-items-end">
+                        <div class="col-4">
+                            <label for="care_house_stats_care_house_select" class="form-label required">Casa de Saúde</label>
+                            <select id="care_house_stats_care_house_select" class="form-select">
+                                <option>Selecione...</option>
+                                {% for c in care_houses %}
+                                    <option value="{{ c.id }}">{{ c.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-4">
+                            <label for="care_house_stats_typology_select" class="form-label required">Tipologia</label>
+                            <select id="care_house_stats_typology_select" class="form-select">
+                                <option>Selecione...</option>
+                                {% for t in typology_combo %}
+                                    <option value="{{ t }}">{{ t }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-4">
+                            <button id="care_house_stats_search" class="btn btn-primary" onclick="TypologyStats.getCareHouseStatsData(this)">
+                                <span class="indicator-progress d-none">
+                                    Aguarde...<span class="ms-2 spinner-border spinner-border-sm"></span>
+                                </span>
+                                <span class="indicator-label">Visualizar</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="">
+                        <table class="table" id="care_house_stats_table"></table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="care_house_stats_download_btn" type="button" class="btn btn-primary" onclick="TypologyStats.downloadCareHouseStats(this)">Download Ficheiro</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end::Care House Stats Details Modal-->
+{% endblock %}
+
+{% block footerJs %}
+    <!--begin::Initiate the Datatable-->
+    <script>
+        let internmentsTable = $("#stats_list").DataTable({
+            columnDefs: [
+                { orderable: false, targets: [3,4] }
+            ],
+            order: [[ 0, "asc" ]],
+        })
+    </script>
+    <!--end::Initiate the Datatable-->
+    <!--begin::Define this page scripts-->
+    <script src="/static/finances/js/typology_stats.js"></script>
+    <!--end::Define this page scripts-->
+{% endblock %}

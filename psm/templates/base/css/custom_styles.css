@@ -1,0 +1,9 @@
+.bg-hover-primary:hover{
+    background-color: lightblue;
+}
+
+.btn-primary {
+    background-color:darkred;
+    border-color:darkred;
+    color:#fff
+}

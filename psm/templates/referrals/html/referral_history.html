@@ -1,0 +1,73 @@
+{% extends 'base/html/base_index.html' %}
+
+{% block reviewer_referral_history_active %}active{% endblock %}
+{% block care_house_referral_history_active %}active{% endblock %}
+{% block doctor_referral_history %}active{% endblock %}
+{% block superuser_referral_history_active %}active{% endblock %}
+
+{% block pageTitle %}Histórico de Referenciações{% endblock %}
+
+{% block content %}
+    <!-- Basic Bootstrap Table -->
+    <div class="card">
+        <h5 class="card-header">Histórico de Referenciações</h5>
+        <div class="card-body">
+            <table id="active_referrals_table" class="table">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Nº SNS</th>
+                        <th>Nº Seg. Social</th>
+                        <th>Instituição Origem</th>
+                        <th>Instituição Destino</th>
+                        <th>Tipologia</th>
+                        <th>Estado</th>
+                        <th>Detalhes</th>
+                    </tr>
+                </thead>
+                <tbody class="">
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!--/ Basic Bootstrap Table -->
+{% endblock %}
+
+{% block modals %}
+    <!--begin::Referral Details Modal-->
+    <div class="modal fade" id="referrals_details_modal" tabindex="-1" aria-labelledby="refer_patient_label" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="refer_patient_modal_title">Detalhes da Referenciação</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end::Referral Details Modal-->
+{% endblock %}
+
+{% block footerJs %}
+    <!--begin::Initiate the Datatable-->
+    <script>
+        $("#active_referrals_table").DataTable({
+            columnDefs: [
+                { orderable: false, targets: [7] }
+            ],
+            order: [[ 0, "asc" ]],
+            serverSide: true,
+            ajax: {
+                url: '{{ datatable_url }}',
+                type: 'GET',
+                'beforeSend': function (request) {
+                    request.setRequestHeader("Authorization", `Token ${Cookies.get('userToken')}`);
+                }
+            }
+        })
+    </script>
+    <!--end::Initiate the Datatable-->
+    <script src="/static/referrals/js/referrals.js"></script>
+{% endblock %}

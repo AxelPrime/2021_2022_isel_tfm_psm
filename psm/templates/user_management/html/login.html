@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Login - Mazer Admin Dashboard</title>
+        <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="/static/mazer/css/bootstrap.css">
+        <link rel="stylesheet" href="/static/mazer/vendors/bootstrap-icons/bootstrap-icons.css">
+        <link rel="stylesheet" href="/static/mazer/css/app.css">
+        <link rel="stylesheet" href="/static/mazer/css/pages/auth.css">
+    </head>
+    <body style="background-color: darkred">
+        <div id="">
+            <div class="d-flex justify-content-center h-100">
+                <div class="w-50">
+                    <div class="card shadow-lg my-10">
+                        <div class="d-flex justify-content-center">
+                            <div class="mt-5 w-75">
+                                <div class="mb-3 d-flex justify-content-center">
+                                    <img class="h-50 w-50" src="/static/base/media/hff_logo.png" alt="Logo">
+                                </div>
+                                <div class="h1 fs-2 text-danger text-center">Entrar</div>
+                                <div class="fs-6 mb-4 text-dark text-center">Entre na sua conta utilizando o seu email e palavra passe</div>
+                                <form class="mb-5">
+                                    <div>
+                                        <div class="form-group position-relative has-icon-left mb-4">
+                                            <input id="email" name="email" type="text" class="form-control" placeholder="Email">
+                                            <div class="form-control-icon">
+                                                <i class="bi bi-person"></i>
+                                            </div>
+                                        </div>
+                                        <div class="form-group position-relative has-icon-left mb-4">
+                                            <input id="password" name="password" type="password" class="form-control" placeholder="Password">
+                                            <div class="form-control-icon">
+                                                <i class="bi bi-shield-lock"></i>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex justify-content-center">
+                                            <div class="form-check form-check-lg d-flex align-items-end">
+                                                <input class="form-check-input me-2" type="checkbox" value="" id="remember_user">
+                                                <label class="form-check-label text-gray-600" for="remember_user">
+                                                    Lembrar-me
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="d-flex justify-content-center">
+                                        <button id="submit_login" type="submit" class="btn btn-danger mt-3">Entrar</button>
+                                    </div>
+                                </form>
+{#                                <div class="text-center mt-3 text-lg">#}
+{#                                    <p><a class="font-bold text-danger fs-5" href="auth-forgot-password.html">Esqueceu-se da palavra passe?</a></p>#}
+{#                                </div>#}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+        <script src="/static/mazer/vendors/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+        <script src="/static/mazer/js/bootstrap.bundle.min.js"></script>
+        <script src="/static/mazer/vendors/sweetalert2/sweetalert2.all.min.js"></script>
+
+        <script src="/static/base/js/generic_functions.js"></script>
+        <script src="/static/user_management/js/login.js"></script>
+    </body>
+</html>

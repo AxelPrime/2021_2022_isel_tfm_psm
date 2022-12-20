@@ -1,0 +1,120 @@
+{% extends 'base/html/base_index.html' %}
+
+{% if user.user_type == 'care_house_staff' %}
+    {% block internment_history_active %}active{% endblock %}
+{% else %}
+    {% block superuser_internment_history_active %}active{% endblock %}
+{% endif %}
+
+{% block pageTitle %}Histórico de Internamentos{% endblock %}
+
+{% block content %}
+    <div class="flex-row d-flex justify-content-between mb-3 align-items-center">
+    </div>
+    <!-- Basic Bootstrap Table -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-baseline">
+            <div class="h5">Histórico de Internamentos</div>
+        </div>
+        <div class="card-body">
+            <table id="internment_history_table" class="table">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Nº SNS</th>
+                        <th>Nº Seg. Social</th>
+                        <th>Tipologia</th>
+                        <th>Estado</th>
+                        <th>Atividade</th>
+                        <th>Detalhes</th>
+                    </tr>
+                </thead>
+                <tbody id="pending_internments_body">
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!--/ Basic Bootstrap Table -->
+{% endblock %}
+
+{% block modals %}
+    <!--begin::Referral Details Modal-->
+    <div class="modal fade" id="referrals_details_modal" tabindex="-1" aria-labelledby="refer_patient_label" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="refer_patient_modal_title">Detalhes da Referenciação</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end::Referral Details Modal-->
+    <!--begin::Activity Log Modal-->
+    <div class="modal fade" id="activity_logs_modal" tabindex="-1" aria-labelledby="activity_logs_label" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="refer_patient_modal_title">Registo de Atividado do Paciente</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="d-flex justify-content-between mb-3">
+                        <div class="text-dark fs-5">
+                            Nome do Paciente: <span id="activity_log_patient" class="fw-bolder"></span>
+                        </div>
+                        <button id="add_activity_log_btn" class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#add_activity_collapse" aria-expanded="false" aria-controls="add_activity_collapse">
+                            <span class="indicator-progress d-none">
+                                Aguarde...<span class="ms-2 spinner-border spinner-border-sm"></span>
+                            </span>
+                            <span class="indicator-label">Adicionar Registo</span>
+                        </button>
+                    </div>
+                    <table id="activity_log_table" class="table">
+                        <thead>
+                            <tr>
+                                <th>Tipo</th>
+                                <th>Descrição</th>
+                                <th>Realizado por</th>
+                                <th>Data</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pending_internments_body">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end::Referral Details Modal-->
+{% endblock %}
+
+{% block footerJs %}
+    <!--begin::Initiate the Datatable-->
+    <script>
+        let  internmentsTable = $("#internment_history_table").DataTable({
+            columnDefs: [
+                { orderable: false, targets: [5] }
+            ],
+            order: [[ 0, "asc" ]],
+            serverSide: true,
+            ajax: {
+                url: '{{ datatable_url }}',
+                type: 'GET',
+                'beforeSend': function (request) {
+                    request.setRequestHeader("Authorization", `Token ${Cookies.get('userToken')}`);
+                }
+            }
+        })
+
+        let activityLogTable = $("#activity_log_table").DataTable({
+            order: [[3, "asc"]]
+        })
+    </script>
+    <!--end::Initiate the Datatable-->
+    <!--begin::Define this page scripts-->
+    <script src="/static/referrals/js/referrals.js"></script>
+    <script src="/static/internments/js/internments.js"></script>
+    <!--end::Define this page scripts-->
+{% endblock %}

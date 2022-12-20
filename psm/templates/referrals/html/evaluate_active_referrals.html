@@ -1,0 +1,119 @@
+{% extends 'base/html/base_index.html' %}
+
+{% if user.user_type == 'care_house_staff' %}
+    {% block care_house_referrals_active %}
+        active
+    {% endblock %}
+{% elif user.user_type == 'reviewer' %}
+    {% block reviewer_referrals_active %}
+        active
+    {% endblock %}
+{% endif %}
+
+
+{% block pageTitle %}Referenciações Pendentes{% endblock %}
+
+{% block content %}
+    <div class="flex-row d-flex justify-content-between mb-3 align-items-center">
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#evaluate_referral_modal ">Avaliar Referenciações</button>
+    </div>
+    <!-- Basic Bootstrap Table -->
+    <div class="card">
+        <h5 class="card-header">Referenciações Pendentes</h5>
+        <div class="card-body">
+            <table id="active_referrals_table" class="table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Nome</th>
+                        <th>Nº SNS</th>
+                        <th>Nº Seg. Social</th>
+                        <th>Instituição Origem</th>
+                        <th>Instituição Destino</th>
+                        <th>Tipologia</th>
+                        <th>Estado</th>
+                        <th>Detalhes</th>
+                    </tr>
+                </thead>
+                <tbody id="pending_referrals_body" class="">
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!--/ Basic Bootstrap Table -->
+{% endblock %}
+
+{% block modals %}
+    <!--begin::Referral Details Modal-->
+    <div class="modal fade" id="referrals_details_modal" tabindex="-1" aria-labelledby="refer_patient_label" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="refer_patient_modal_title">Detalhes da Referenciação</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end::Referral Details Modal-->
+    <!--begin::Evaluate Referral Modal-->
+    <div class="modal fade" id="evaluate_referral_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Avaliar Referenciações</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="evaluate_referrals_form">
+                        <div class="row form-group mb-4">
+                            <div class="col-6">
+                                <label class="form-label required">Avaliação</label>
+                                <select id="evaluation" class="form-select">
+                                    <option value="">Selecione...</option>
+                                    {% for state in status %}
+                                         <option value="{{ state.label }}">{{ state.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div id="rejection_reason_div" class="row form-group mb-4 d-none">
+                            <div class="col-12">
+                                <label class="form-label required">Razão de Rejeição</label>
+                                <textarea id="rejection_reason" class="form-control" rows="5" style="resize: none"></textarea>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-primary" onclick="Referrals.evaluateReferrals()">Avaliar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block footerJs %}
+    <!--begin::Initiate the Datatable-->
+    <script>
+        let referralsTable = $("#active_referrals_table").DataTable({
+            columnDefs: [
+                { orderable: false, targets: [7] }
+            ],
+            order: [[ 1, "asc" ]],
+            serverSide: true,
+            ajax: {
+                url: '{{ datatable_url }}',
+                type: 'GET',
+                'beforeSend': function (request) {
+                    request.setRequestHeader("Authorization", `Token ${Cookies.get('userToken')}`);
+                }
+            }
+        })
+    </script>
+    <!--end::Initiate the Datatable-->
+    <script src="/static/referrals/js/referrals.js"></script>
+{% endblock %}

@@ -1,0 +1,6 @@
+from .test_patients import create_test_patients
+from .test_daily_value import create_test_daily_value
+from .test_entities import create_institutions, create_care_house
+from .test_notification_templates import create_notification_templates
+from .test_status import create_test_status
+from .test_users import create_test_users

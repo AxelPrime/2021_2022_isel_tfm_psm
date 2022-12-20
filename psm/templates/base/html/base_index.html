@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PSM - Plataforma de Saúde Mental</title>
+
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/mazer/css/bootstrap.css">
+
+    <link rel="stylesheet" href="/static/mazer/vendors/iconly/bold.css">
+
+    <link rel="stylesheet" href="/static/mazer/vendors/perfect-scrollbar/perfect-scrollbar.css">
+    <link rel="stylesheet" href="/static/mazer/vendors/bootstrap-icons/bootstrap-icons.css">
+    <link rel="stylesheet" href="/static/mazer/css/app.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css"/>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css"/>
+
+    <link rel="stylesheet" href="/static/base/css/custom_styles.css"/>
+
+    <link rel="shortcut icon" href="/static/base/media/hff_icon.jfif" type="image/x-icon">
+</head>
+
+<body>
+    <div id="app">
+        <div id="sidebar" class="active">
+            <div class="sidebar-wrapper active">
+                <div class="sidebar-header">
+                    <div class="d-flex justify-content-between">
+                        <div class="">
+                            <img class="h-100 w-100" src="/static/base/media/hff_logo.png" alt="Logo" srcset="">
+                        </div>
+                        <div class="toggler">
+                            <a href="#" class="sidebar-hide d-xl-none d-block"><i class="bi bi-x bi-middle"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="sidebar-menu">
+                    <ul class="menu">
+                        <li class="sidebar-title text-muted mb-5">Olá {{ user.name }}</li>
+                        <!--begin::Doctor Sidebar-->
+                        {% if user.user_type == 'doctor' %}
+                            <li class="sidebar-title">Referenciações</li>
+                            <li class="sidebar-item {% block doctor_active_referrals %}{% endblock %}">
+                                <a href="/doctor/active-referrals/" class="sidebar-link">
+                                    <i class="bi bi-check-circle"></i>
+                                    <span>Referenciações Ativas</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-item {% block doctor_referral_history %}{% endblock %}">
+                                <a href="/referrals/history/" class="sidebar-link">
+                                    <i class="bi-clock-history"></i>
+                                    <span>Histórico de Referenciações</span>
+                                </a>
+                            </li>
+                        <!--end::Doctor Sidebar-->
+                        <!--begin::Care House Sidebar-->
+                        {% elif user.user_type == 'care_house_staff' %}
+                            <li class="sidebar-title">Referenciações</li>
+                            <li class="sidebar-item {% block care_house_referrals_active %}{% endblock %}">
+                                <a href="/care-house/pending-referrals/" class="sidebar-link">
+                                    <i class="bi bi-check-circle"></i>
+                                    <span>Referenciações Ativas</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-item {% block care_house_referral_history_active %}{% endblock %}">
+                                <a href="/referrals/history/" class="sidebar-link">
+                                    <i class="bi-clock-history"></i>
+                                    <span>Histórico de Referenciações</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-title">Gestão de Internamentos</li>
+                            <li class="sidebar-item {% block pending_interments_active %}{% endblock %}">
+                                <a href="/care-house/pending-internments/" class="sidebar-link">
+                                    <i class="bi bi-door-open"></i>
+                                    <span>Aguardam Entrada</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-item {% block active_interments_active %}{% endblock %}">
+                                <a href="/care-house/active-internments/" class="sidebar-link">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart-pulse" viewBox="0 0 16 16">
+                                      <path fill-rule="evenodd" d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053.918 3.995.78 5.323 1.508 7H.43c-2.128-5.697 4.165-8.83 7.394-5.857.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17c3.23-2.974 9.522.159 7.394 5.856h-1.078c.728-1.677.59-3.005.108-3.947C13.486.878 10.4.28 8.717 2.01L8 2.748ZM2.212 10h1.315C4.593 11.183 6.05 12.458 8 13.795c1.949-1.337 3.407-2.612 4.473-3.795h1.315c-1.265 1.566-3.14 3.25-5.788 5-2.648-1.75-4.523-3.434-5.788-5Zm8.252-6.686a.5.5 0 0 0-.945.049L7.921 8.956 6.464 5.314a.5.5 0 0 0-.88-.091L3.732 8H.5a.5.5 0 0 0 0 1H4a.5.5 0 0 0 .416-.223l1.473-2.209 1.647 4.118a.5.5 0 0 0 .945-.049l1.598-5.593 1.457 3.642A.5.5 0 0 0 12 9h3.5a.5.5 0 0 0 0-1h-3.162l-1.874-4.686Z"/>
+                                    </svg>
+                                    <span>Pacientes Internados</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-item {% block internment_history_active %}{% endblock %}">
+                                <a href="/care-house/internment-history/" class="sidebar-link">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-rolodex" viewBox="0 0 16 16">
+                                      <path d="M8 9.05a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"/>
+                                      <path d="M1 1a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h.5a.5.5 0 0 0 .5-.5.5.5 0 0 1 1 0 .5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5.5.5 0 0 1 1 0 .5.5 0 0 0 .5.5h.5a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1H6.707L6 1.293A1 1 0 0 0 5.293 1H1Zm0 1h4.293L6 2.707A1 1 0 0 0 6.707 3H15v10h-.085a1.5 1.5 0 0 0-2.4-.63C11.885 11.223 10.554 10 8 10c-2.555 0-3.886 1.224-4.514 2.37a1.5 1.5 0 0 0-2.4.63H1V2Z"/>
+                                    </svg>
+                                    <span>Histórico de Internamentos</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-title">Gestão Fincnaceira</li>
+                            <li class="sidebar-item {% block care_house_receipt_lists_active %}{% endblock %}">
+                                <a href="/care-house/finances/receipts/" class="sidebar-link">
+                                    <i class="bi bi-check-circle"></i>
+                                    <span>Listagem de Recibos</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-item {% block care_house_receipt_history_active %}{% endblock %}">
+                                <a href="/care-house/finances/receipt-history/" class="sidebar-link">
+                                    <i class="bi bi-check-circle"></i>
+                                    <span>Histórico de Recibos</span>
+                                </a>
+                            </li>
+                        <!--end::Care House Sidebar-->
+                        <!--begin::Reviewer Sidebar-->
+                        {% elif user.user_type == 'reviewer' %}
+                            <li class="sidebar-title">Referenciações</li>
+                            <li class="sidebar-item {% block reviewer_referrals_active %}{% endblock %}">
+                                <a href="/reviewer/active-referrals/" class="sidebar-link">
+                                    <i class="bi bi-check-circle"></i>
+                                    <span>Referenciações Ativas</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-item {% block reviewer_referral_history_active %}{% endblock %}">
+                                <a href="/referrals/history/" class="sidebar-link">
+                                    <i class="bi-clock-history"></i>
+                                    <span>Histórico de Referenciações</span>
+                                </a>
+                            </li>
+                        <!--end::Reviewer Sidebar-->
+                        <!--begin::Fincancial Sidebar-->
+                        {% elif user.user_type == 'financial' %}
+                            <li class="sidebar-title">Gestão Fincnaceira</li>
+                            <li class="sidebar-item {% block financial_monthly_receipt_lists_active %}{% endblock %}">
+                                <a href="/financial/finances/monthly-receipts/" class="sidebar-link">
+                                    <i class="bi bi-check-circle"></i>
+                                    <span>Listagem de Recibos</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-item {% block financial_monthly_receipt_history_active %}{% endblock %}">
+                                <a href="/financial/finances/receipt-history/" class="sidebar-link">
+                                    <i class="bi bi-check-circle"></i>
+                                    <span>Histórico de Recibos</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-item {% block financial_yearly_invoices_active %}{% endblock %}">
+                                <a href="/financial/finances/yearly-invoices/" class="sidebar-link">
+                                    <i class="bi bi-check-circle"></i>
+                                    <span>Listagem de Recibos Anuais</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-title">Estatísticas</li>
+                            <li class="sidebar-item {% block financial_typology_stats_active %}{% endblock %}">
+                                <a href="/financial/finances/stats/typology/" class="sidebar-link">
+                                    <i class="bi bi-check-circle"></i>
+                                    <span>Estatísticas de Tipologia</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-item {% block financial_typology_ii_active %}{% endblock %}">
+                                <a href="/financial/finances/stats/typology-ii/" class="sidebar-link">
+                                    <i class="bi bi-check-circle"></i>
+                                    <span>Estatísticas de Tipologia II</span>
+                                </a>
+                            </li>
+{#                            <li class="sidebar-item {% block financial_monthly_receipt_history_active %}{% endblock %}">#}
+{#                                <a href="/financial/finances/monthly-history/" class="sidebar-link">#}
+{#                                    <i class="bi bi-check-circle"></i>#}
+{#                                    <span>Histórico de Recibos</span>#}
+{#                                </a>#}
+{#                            </li>#}
+                        <!--end::Financial Sidebar-->
+                        <!--begin::Superuser Sidebar-->
+                        {% elif user.user_type == 'superuser' %}
+                            <li class="sidebar-title">Referenciações</li>
+                            <li class="sidebar-item {% block superuser_doctor_active_referrals %}{% endblock %}">
+                                <a href="/superuser/doctor/referrals/" class="sidebar-link">
+                                    <i class="bi bi-check-circle"></i>
+                                    <span>Médico - Referenciações Ativas</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-item {% block superuser_care_house_referrals_active %}{% endblock %}">
+                                <a href="/superuser/care-house/referrals/" class="sidebar-link">
+                                    <i class="bi bi-check-circle"></i>
+                                    <span>Casa de Saúde - Referenciações Ativas</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-item {% block superuser_reviewer_referrals_active %}{% endblock %}">
+                                <a href="/superuser/reviewer/referrals/" class="sidebar-link">
+                                    <i class="bi bi-check-circle"></i>
+                                    <span>Avaliador - Referenciações Ativas</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-item {% block superuser_referral_history_active %}{% endblock %}">
+                                <a href="/referrals/history/" class="sidebar-link">
+                                    <i class="bi-clock-history"></i>
+                                    <span>Histórico de Referenciações</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-title">Gestão de Internamentos</li>
+                            <li class="sidebar-item {% block superuser_pending_interments_active %}{% endblock %}">
+                                <a href="/superuser/care-house/pending-internments/" class="sidebar-link">
+                                    <i class="bi bi-door-open"></i>
+                                    <span>Aguardam Entrada</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-item {% block superuser_active_interments_active %}{% endblock %}">
+                                <a href="/superuser/care-house/active-internments/" class="sidebar-link">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart-pulse" viewBox="0 0 16 16">
+                                      <path fill-rule="evenodd" d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053.918 3.995.78 5.323 1.508 7H.43c-2.128-5.697 4.165-8.83 7.394-5.857.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17c3.23-2.974 9.522.159 7.394 5.856h-1.078c.728-1.677.59-3.005.108-3.947C13.486.878 10.4.28 8.717 2.01L8 2.748ZM2.212 10h1.315C4.593 11.183 6.05 12.458 8 13.795c1.949-1.337 3.407-2.612 4.473-3.795h1.315c-1.265 1.566-3.14 3.25-5.788 5-2.648-1.75-4.523-3.434-5.788-5Zm8.252-6.686a.5.5 0 0 0-.945.049L7.921 8.956 6.464 5.314a.5.5 0 0 0-.88-.091L3.732 8H.5a.5.5 0 0 0 0 1H4a.5.5 0 0 0 .416-.223l1.473-2.209 1.647 4.118a.5.5 0 0 0 .945-.049l1.598-5.593 1.457 3.642A.5.5 0 0 0 12 9h3.5a.5.5 0 0 0 0-1h-3.162l-1.874-4.686Z"/>
+                                    </svg>
+                                    <span>Pacientes Internados</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-item {% block superuser_internment_history_active %}{% endblock %}">
+                                <a href="/superuser/care-house/internment-history/" class="sidebar-link">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-rolodex" viewBox="0 0 16 16">
+                                      <path d="M8 9.05a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"/>
+                                      <path d="M1 1a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h.5a.5.5 0 0 0 .5-.5.5.5 0 0 1 1 0 .5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5.5.5 0 0 1 1 0 .5.5 0 0 0 .5.5h.5a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1H6.707L6 1.293A1 1 0 0 0 5.293 1H1Zm0 1h4.293L6 2.707A1 1 0 0 0 6.707 3H15v10h-.085a1.5 1.5 0 0 0-2.4-.63C11.885 11.223 10.554 10 8 10c-2.555 0-3.886 1.224-4.514 2.37a1.5 1.5 0 0 0-2.4.63H1V2Z"/>
+                                    </svg>
+                                    <span>Histórico de Internamentos</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-title">Gestão Financeira</li>
+                            <li class="sidebar-item {% block superuser_daily_values_active %}{% endblock %}">
+                                <a href="/superuser/daily-values/" class="sidebar-link">
+                                    <i class="bi bi-door-open"></i>
+                                    <span>Valores Diários</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-item {% block superuser_receipt_lists_active %}{% endblock %}">
+                                <a href="/superuser/care-house/finances/receipts/" class="sidebar-link">
+                                    <i class="bi bi-door-open"></i>
+                                    <span>Casa de Saúde - Recibos Mensais</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-item {% block superuser_monthly_receipt_active %}{% endblock %}">
+                                <a href="/superuser/financial/finances/monthly-receipts/" class="sidebar-link">
+                                    <i class="bi bi-door-open"></i>
+                                    <span>Financeiro - Recibos Mensais</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-item {% block superuser_monthly_receipt_history %}{% endblock %}">
+                                <a href="/superuser/financial/finances/receipt-history/" class="sidebar-link">
+                                    <i class="bi bi-door-open"></i>
+                                    <span>Financeiro - Histórico de Recibos</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-item {% block superuser_yearly_invoices_active %}{% endblock %}">
+                                <a href="/superuser/financial/finances/yearly-invoices/" class="sidebar-link">
+                                    <i class="bi bi-check-circle"></i>
+                                    <span>Listagem de Recibos Anuais</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-title">Estatísticas</li>
+                            <li class="sidebar-item {% block superuser_typology_stats_active %}{% endblock %}">
+                                <a href="/superuser/financial/finances/stats/typology/" class="sidebar-link">
+                                    <i class="bi bi-check-circle"></i>
+                                    <span>Estatísticas de Tipologia</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-item {% block superuser_typology_ii_active %}{% endblock %}">
+                                <a href="/superuser/financial/finances/stats/typology-ii/" class="sidebar-link">
+                                    <i class="bi bi-check-circle"></i>
+                                    <span>Estatísticas de Tipologia II</span>
+                                </a>
+                            </li>
+                        {% endif %}
+                        <!--end::Superuser Sidebar-->
+                        <li class="sidebar-title">Sessão</li>
+                        <li class="sidebar-item">
+                            <a href="javascript:void(0);" class="sidebar-link" onclick="GenericFunctions.logout()">
+                                <i class="bi bi-power"></i>
+                                <span>Terminar Sessão</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <button class="sidebar-toggler btn x"><i data-feather="x"></i></button>
+            </div>
+        </div>
+        <div id="main">
+            <header class="mb-3">
+                <a href="#" class="burger-btn d-block d-xl-none">
+                    <i class="bi bi-justify fs-3"></i>
+                </a>
+            </header>
+
+            <div class="page-heading d-flex flex-row justify-content-between">
+                <h3>{% block pageTitle %}{% endblock %}</h3>
+                <div class="dropdown" id="notifications_dropdown">
+                    <i class="bi bi-bell fs-4 me-2" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
+                        {% if user.notification_data.count %}
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger fs-6">
+                                {{ user.notification_data.count }}
+                            </span>
+                        {% endif %}
+                    </i>
+                    <div class="dropdown-menu shadow shadow-sm" style="width: 350px">
+                        {% if not user.notification_data.count %}
+                            <div class="m-3 fs-5 fw-bolder justify-content-center d-flex">Não tem notificações</div>
+                        {% else %}
+                            {% for n in user.notification_data.notifications %}
+                                <div class="d-flex flex-row mx-3 align-items-center bg-hover-primary py-2" data-notification-id="{{ n.id }}" data-readable="{{ n.readable }}" data-link="{{ n.link }}" onclick="Notifications.redirectNotification(this)" style="cursor: pointer; ">
+                                    <div class="d-flex flex-column align-items-center">
+                                        <div class="{{ n.bg }} p-2 fs-5 text-white rounded-circle">
+                                            <div class="d-flex justify-content-center align-items-center" style="height: 30px; width: 30px">
+                                                <div class="pt-2">
+                                                    <i class="{{ n.icon }} fs-3"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex flex-column align-items-center">
+                                        <div class="ms-2">
+                                            <div class="d-flex flex-row align-items-center">
+                                                <div class="d-flex flex-column fw-bolder fs-5">
+                                                    {{ n.title }}
+                                                </div>
+                                                <div class="d-flex flex-column ms-2 fs-6">
+                                                    {{ n.date }}
+                                                </div>
+                                            </div>
+                                            <div class="d-flex flex-row justify-content-start">
+                                                {{ n.text }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="page-content">
+                {% block content %}
+                {% endblock %}
+            </div>
+
+            <footer>
+                <div class="footer clearfix mb-0 text-muted">
+                    <div class="float-start">
+                        <p>2022 &copy; HFF</p>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    {% block modals %}{% endblock %}
+
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.min.js"></script>
+    <script src="https://cdn.datatables.net/plug-ins/1.13.1/sorting/datetime-moment.js"></script>
+    <script src="/static/mazer/vendors/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+    <script src="/static/mazer/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/mazer/vendors/sweetalert2/sweetalert2.all.min.js"></script>
+
+    <script src="/static/mazer/js/main.js"></script>
+{#    <script src="/static/mazer/vendors/simple-datatables/simple-datatables.js"></script>#}
+    <script src="/static/base/js/generic_functions.js"></script>
+    <script src="/static/base/js/notifications.js"></script>
+
+    <script>
+        $.fn.dataTable.moment('DD/MM/YYYY');
+        $.fn.dataTable.moment('hh:mm:ss DD/MM/YYYY');
+    </script>
+
+    {% block footerJs %}{% endblock %}
+</body>
+
+</html>

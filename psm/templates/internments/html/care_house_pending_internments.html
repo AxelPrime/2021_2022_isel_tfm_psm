@@ -1,0 +1,83 @@
+{% extends 'base/html/base_index.html' %}
+
+{% if user.user_type == 'care_house_staff' %}
+    {% block pending_interments_active %}active{% endblock %}
+{% else%}
+    {% block superuser_pending_interments_active %}active{% endblock %}
+{% endif %}
+
+
+{% block pageTitle %}Internamentos Pendentes{% endblock %}
+
+{% block content %}
+    <div class="flex-row d-flex justify-content-between mb-3 align-items-center">
+
+    </div>
+    <!-- Basic Bootstrap Table -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-baseline">
+            <div class="h5">Internamentos que Aguardam Entrada</div>
+            <button id="register_internments_btn" class="btn btn-primary">Registar Internamentos</button>
+        </div>
+        <div class="card-body">
+            <table id="pending_internments" class="table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Nome</th>
+                        <th>Nº SNS</th>
+                        <th>Nº Seg. Social</th>
+                        <th>Instituição Origem</th>
+                        <th>Tipologia</th>
+                        <th>Detalhes</th>
+                    </tr>
+                </thead>
+                <tbody id="pending_internments_body">
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!--/ Basic Bootstrap Table -->
+{% endblock %}
+
+{% block modals %}
+    <!--begin::Referral Details Modal-->
+    <div class="modal fade" id="referrals_details_modal" tabindex="-1" aria-labelledby="refer_patient_label" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="refer_patient_modal_title">Detalhes da Referenciação</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end::Referral Details Modal-->
+{% endblock %}
+
+{% block footerJs %}
+    <!--begin::Initiate the Datatable-->
+    <script>
+        let  internmentsTable = $("#pending_internments").DataTable({
+            columnDefs: [
+                { orderable: false, targets: [0, 6] }
+            ],
+            order: [[ 1, "asc" ]],
+            serverSide: true,
+            ajax: {
+                url: '{{ datatable_url }}',
+                type: 'GET',
+                'beforeSend': function (request) {
+                    request.setRequestHeader("Authorization", `Token ${Cookies.get('userToken')}`);
+                }
+            }
+        })
+    </script>
+    <!--end::Initiate the Datatable-->
+    <!--begin::Define this page scripts-->
+    <script src="/static/referrals/js/referrals.js"></script>
+    <script src="/static/internments/js/internments.js"></script>
+    <!--end::Define this page scripts-->
+{% endblock %}

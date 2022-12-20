@@ -1,0 +1,86 @@
+{% extends 'base/html/base_index.html' %}
+
+{% if user.user_type == 'financial' %}
+    {% block financial_typology_ii_active %}active{% endblock %}
+{% else%}
+    {% block superuser_typology_ii_active %}active{% endblock %}
+{% endif %}
+
+{% block pageTitle %}Dados Tipologia II{% endblock %}
+
+{% block content %}
+    <div class="flex-row d-flex justify-content-between mb-3 align-items-center">
+    </div>
+    <!-- Basic Bootstrap Table -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-baseline">
+            <div class="h5">Dados Tipologia II</div>
+        </div>
+        <div class="card-body">
+            <table id="years_list" class="table">
+                <thead>
+                    <tr>
+                        <th>Ano</th>
+                        <th>Mês</th>
+                        <th>Total de Pacientes</th>
+                        <th>Valor Total</th>
+                        <th>Detalhes</th>
+                    </tr>
+                </thead>
+                <tbody id="">
+                    {% for i in stats %}
+                        <tr>
+                            <td>{{ i.year }}</td>
+                            <td>{{ i.month }}</td>
+                            <td>{{ i.total_patients }}</td>
+                            <td>{{ i.total_amount }}</td>
+                            <td><a href="javascript:void(0);" data-stats-year="{{ i.year }}" data-stats-month="{{ i.month_number }}" onclick="TypologyII.getStatsData(this)">Ver Detalhes</a></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!--/ Basic Bootstrap Table -->
+{% endblock %}
+
+{% block modals %}
+    <!--begin::Invoice Details Modal-->
+    <div class="modal fade" id="stats_details_modal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Detalhes</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <table id="stats_details" class="table">
+                        </table>
+                    </div>
+
+                </div>
+                <div id="stats_details_footer" class="modal-footer" data-can-evaluate="false">
+                    <button id="download_file_btn" type="button" class="btn btn-primary" onclick="TypologyII.downloadFile(this)">Download Ficheiro</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end::Invoice Details Modal-->
+{% endblock %}
+
+{% block footerJs %}
+    <!--begin::Initiate the Datatable-->
+    <script>
+        let yearsList = $("#years_list").DataTable({
+            columnDefs: [
+                { orderable: false, targets: [4] }
+            ],
+            order: [[ 0, "asc" ]],
+        })
+    </script>
+    <!--end::Initiate the Datatable-->
+    <!--begin::Define this page scripts-->
+    <script src="/static/finances/js/typology_ii.js"></script>
+    <!--end::Define this page scripts-->
+{% endblock %}

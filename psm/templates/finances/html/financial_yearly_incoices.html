@@ -1,0 +1,136 @@
+{% extends 'base/html/base_index.html' %}
+
+{% if user.user_type == 'financial' %}
+    {% block financial_yearly_invoices_active %}active{% endblock %}
+{% else%}
+    {% block superuser_yearly_invoices_active %}active{% endblock %}
+{% endif %}
+
+{% block pageTitle %}Listagem de Recibos Anuais{% endblock %}
+
+{% block content %}
+    <div class="flex-row d-flex justify-content-between mb-3 align-items-center">
+    </div>
+    <!-- Basic Bootstrap Table -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-baseline">
+            <div class="h5">Listagem de Recibos Anuais</div>
+        </div>
+        <div class="card-body">
+            <table id="receipts_list" class="table">
+                <thead>
+                    <tr>
+                        <th>Ano</th>
+                        <th>Valor Total</th>
+                        <th>Detalhes</th>
+                    </tr>
+                </thead>
+                <tbody id="">
+                    {% for i in invoices %}
+                        <tr>
+                            <td>{{ i.year }}</td>
+                            <td>{{ i.total_amount }}</td>
+                            <td><a href="javascript:void(0);" data-invoice-id="{{ i.invoice_number }}" onclick="YearlyInvoices.getInvoiceData(this)">Ver Detalhes</a></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!--/ Basic Bootstrap Table -->
+{% endblock %}
+
+{% block modals %}
+    <!--begin::Invoice Details Modal-->
+    <div class="modal fade" id="receipt_details_modal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Detalhes do Recibo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <table id="receipt_details" class="table">
+                        </table>
+                    </div>
+
+                </div>
+                <div id="invoice_details_footer" class="modal-footer" data-can-evaluate="false">
+                    <button class="btn btn-primary" id="download_invoice_btn" onclick="YearlyInvoices.downloadInvoice(this)">
+                        Download Recibo
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end::Invoice Details Modal-->
+    <!--begin::Referral Details Modal-->
+    <div class="modal fade" id="referrals_details_modal" tabindex="-1" aria-labelledby="refer_patient_label" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="refer_patient_modal_title">Detalhes da Referenciação</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light-primary" data-bs-target="#receipt_details_modal" data-bs-toggle="modal" data-bs-dismiss="modal">Regressar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end::Referral Details Modal-->
+    <!--begin::Activity Log Modal-->
+    <div class="modal fade" id="activity_logs_modal" tabindex="-1" aria-labelledby="activity_logs_label" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Registo de Atividado do Paciente</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="d-flex justify-content-between mb-3">
+                        <div class="text-dark fs-5">
+                            Nome do Paciente: <span id="activity_log_patient" class="fw-bolder"></span>
+                        </div>
+                    </div>
+                    <table id="activity_log_table" class="table">
+                        <thead>
+                            <tr>
+                                <th>Tipo</th>
+                                <th>Descrição</th>
+                                <th>Realizado por</th>
+                                <th>Data</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pending_internments_body">
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light-primary" data-bs-target="#receipt_details_modal" data-bs-toggle="modal" data-bs-dismiss="modal">Regressar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end::Activity Log Modal-->
+{% endblock %}
+
+{% block footerJs %}
+    <!--begin::Initiate the Datatable-->
+    <script>
+        let internmentsTable = $("#receipts_list").DataTable({
+            columnDefs: [
+                { orderable: false, targets: [2] }
+            ],
+            order: [[ 0, "asc" ]],
+        })
+    </script>
+    <!--end::Initiate the Datatable-->
+    <!--begin::Define this page scripts-->
+    <script src="/static/finances/js/yearly_invoices.js"></script>
+    <script src="/static/internments/js/internments.js"></script>
+    <script src="/static/referrals/js/referrals.js"></script>
+    <!--end::Define this page scripts-->
+{% endblock %}

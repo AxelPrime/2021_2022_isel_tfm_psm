@@ -1,0 +1,234 @@
+{% extends 'base/html/base_index.html' %}
+
+{% if user.user_type == 'care_house_staff' %}
+    {% block care_house_receipt_lists_active %}active{% endblock %}
+{% else%}
+    {% block superuser_receipt_lists_active %}active{% endblock %}
+{% endif %}
+
+{% block pageTitle %}Listagem de Recibos{% endblock %}
+
+{% block content %}
+    <div class="flex-row d-flex justify-content-between mb-3 align-items-center">
+    </div>
+    <!-- Basic Bootstrap Table -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-baseline">
+            <div class="h5">Listagem de Recibos</div>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add_invoice_modal" id="add_receipt_btn">Adicionar Recibo</button>
+        </div>
+        <div class="card-body">
+            <table id="receipts_list" class="table">
+                <thead>
+                    <tr>
+                        <th>Tipologia</th>
+                        <th>Inicio de Contabilização</th>
+                        <th>Fim de Contabilização</th>
+                        <th>Total de Pacientes</th>
+                        <th>Valor total</th>
+                        <th>Estado</th>
+                        <th>Detalhes</th>
+                    </tr>
+                </thead>
+                <tbody id="">
+                    {% for i in invoices %}
+                        <tr>
+                            <td>{{ i.typology }}</td>
+                            <td>{{ i.start_date }}</td>
+                            <td>{{ i.end_date }}</td>
+                            <td>{{ i.total_patients }}</td>
+                            <td>{{ i.total_amount }}</td>
+                            <td>{{ i.status }}</td>
+                            <td><a href="javascript:void(0);" data-invoice-id="{{ i.id }}" onclick="Invoices.getInvoiceDetails(this)">Ver Detalhes</a></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!--/ Basic Bootstrap Table -->
+{% endblock %}
+
+{% block modals %}
+    <!--begin::Invoice Details Modal-->
+    <div class="modal fade" id="receipt_details_modal" tabindex="-1" aria-labelledby="receipt_details_label" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="refer_patient_modal_title">Detalhes do Recibo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="invoice_details_title" class="mb-3 fw-bold fs-5"></div>
+                    <table id="receipt_details" class="table">
+                        <thead>
+                            <tr>
+                                <th>Nome do Paciente</th>
+                                <th>Inicio de Contabilização</th>
+                                <th>Fim de Contabilização</th>
+                                <th>Total de Dias</th>
+                                <th>Valor total</th>
+                                <th>Atividade</th>
+                                <th>Detalhes</th>
+                            </tr>
+                        </thead>
+                        <tbody id=""></tbody>
+                    </table>
+                </div>
+                <div id="invoice_details_footer" class="modal-footer" data-can-evaluate="false"></div>
+            </div>
+        </div>
+    </div>
+    <!--end::Invoice Details Modal-->
+    <!--begin::Add Invoice Modal-->
+    <div class="modal fade" id="add_invoice_modal" tabindex="-1" aria-labelledby="add_invoice_label" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="refer_patient_modal_title">Adicionar Recibo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="fs-6 mb-3">
+                        Esta funcionalidade permite-lhe cirar uma listagem provisória sem a necessidade de anexar um ficheiro de recibo ou criar uma listagem final com o anexo do recibo a ser enviado ao HFF.
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <label for="typology_select" class="form-label">Seleção Tipologia:</label>
+                            <select id="typology_select" class="form-select">
+                                <option>Selecione...</option>
+                                <option value="I">I</option>
+                                <option value="II">II</option>
+                                <option value="III">III</option>
+                            </select>
+                        </div>
+                        {% if user.user_type == 'superuser' %}
+                            <div class="col-6 mb-3">
+                                <label for="care_house_select" class="form-label">Casa de Saúde:</label>
+                                <select id="care_house_select" class="form-select">
+                                    <option>Selecione...</option>
+                                    {% for c in care_houses %}
+                                        <option value="{{ c.code }}">{{ c.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div id="next_invoice_body"></div>
+                </div>
+                <div class="modal-footer" id="next_invoice_footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+                        Fechar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end::Add Invoice Modal-->
+    <!--begin::Referral Details Modal-->
+    <div class="modal fade" id="referrals_details_modal" tabindex="-1" aria-labelledby="refer_patient_label" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="refer_patient_modal_title">Detalhes da Referenciação</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light-primary" data-bs-target="#receipt_details_modal" data-bs-toggle="modal" data-bs-dismiss="modal">Regressar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end::Referral Details Modal-->
+    <!--begin::Activity Log Modal-->
+    <div class="modal fade" id="activity_logs_modal" tabindex="-1" aria-labelledby="activity_logs_label" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Registo de Atividado do Paciente</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="d-flex justify-content-between mb-3">
+                        <div class="text-dark fs-5">
+                            Nome do Paciente: <span id="activity_log_patient" class="fw-bolder"></span>
+                        </div>
+                    </div>
+                    <table id="activity_log_table" class="table">
+                        <thead>
+                            <tr>
+                                <th>Tipo</th>
+                                <th>Descrição</th>
+                                <th>Realizado por</th>
+                                <th>Data</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pending_internments_body">
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light-primary" data-bs-target="#receipt_details_modal" data-bs-toggle="modal" data-bs-dismiss="modal">Regressar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end::Activity Log Modal-->
+    <!--begin::Finalize Invoice Modal-->
+    <div class="modal fade" id="finalize_invoice_modal" tabindex="-1" aria-labelledby="" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="refer_patient_modal_title">Finalizar Listagem</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <label for="invoice_file" class="form-label">Ficheiro:</label>
+                    <input type="file" id="invoice_file" accept="application/pdf" class="form-control">
+                </div>
+                <div class="d-flex justify-content-between modal-footer">
+                    <button type="button" class="btn btn-light-primary" data-bs-target="#receipt_details_modal" data-bs-toggle="modal" data-bs-dismiss="modal">Regressar</button>
+                    <button id="finalize_invoice_submit" type="button" class="btn btn-primary" onclick="Invoices.finalizeInvoice(this)">
+                        <span class="indicator-progress d-none">
+                            Aguarde...<span class="ms-2 spinner-border spinner-border-sm"></span>
+                        </span>
+                        <span class="indicator-label">Finalizar</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end::Finalize Invoice Modal-->
+{% endblock %}
+
+{% block footerJs %}
+    <!--begin::Initiate the Datatable-->
+    <script>
+        let internmentsTable = $("#receipts_list").DataTable({
+            columnDefs: [
+                { orderable: false, targets: [6] }
+            ],
+            order: [[ 0, "asc" ]],
+        })
+
+        let receiptDetailsTable = $("#receipt_details").DataTable({
+            columnDefs: [
+                { orderable: false, targets: [5, 6] }
+            ],
+            order: [[ 0, "asc" ]],
+        })
+
+        let activityLogTable = $("#activity_log_table").DataTable({
+            order: [[3, "asc"]]
+        })
+    </script>
+    <!--end::Initiate the Datatable-->
+    <!--begin::Define this page scripts-->
+    {{ next_invoices|json_script:"next_invoices" }}
+    <script src="/static/finances/js/invoices.js"></script>
+    <script src="/static/internments/js/internments.js"></script>
+    <script src="/static/referrals/js/referrals.js"></script>
+    <!--end::Define this page scripts-->
+{% endblock %}
